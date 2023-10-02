@@ -62,13 +62,12 @@
             {
                 Console.WriteLine("child count = 0");
                 current.Add(item);
-                if (current.IsOverflowedNonRoot)
+                if (current.IsOverflowed)
                 {
-                    current.IsOverflowedNonRoot = false;
-                    return current;
+                    SplitNode(current);
+                    current.IsOverflowed = false;
                 }
-                else
-                    return current;
+                return current;
             }
 
             //int lastBranchIndex = current.Children.Count - 1;
@@ -98,10 +97,15 @@
                 }
             }
             //}
+            if (current.IsOverflowed)
+            {
+                SplitNode(current);
+                current.IsOverflowed = false;
+            }
             return current;
         }
 
-        private void SplitNode(Node node) // -100, -75, -50
+        private void SplitNode(Node node)
         {
             Console.WriteLine("split");
 
@@ -112,10 +116,14 @@
             int lengthStart = _m / 2;
             int lengthEnd = _m % 2 == 0 ? (_m - 1) / 2 : _m / 2;
             int centerIndex = node.Values.Count / 2;
-            var nodeValues = node.Values;
 
-            left.Children = new List<Node>(node.Children.Take(lengthStart));
-            right.Children = new List<Node>(node.Children.TakeLast(lengthEnd));
+            List<int> nodeValues = node.Values;
+
+            int childCountStart = node.Children.Count / 2;
+            int childCountEnd = node.Children.Count % 2 == 0 ? (node.Children.Count) / 2 : (node.Children.Count + 1) / 2;
+
+            left.Children = new List<Node>(node.Children.Take(childCountStart));
+            right.Children = new List<Node>(node.Children.TakeLast(childCountEnd));
 
             left.ReplaceValues(nodeValues.Take(lengthStart));
             right.ReplaceValues(nodeValues.TakeLast(lengthEnd));
@@ -128,25 +136,22 @@
 
                 left.Parent = right.Parent = node;
 
-
                 node.ReplaceValues(new List<int> { node.Values[centerIndex] });
-
-                node.Children.Add(left);
-                node.Children.Add(right);
+                node.Children.Clear();
+                node.AddChildren(left);
+                node.AddChildren(right);
             }
             else
             {
                 node.IsOverflowedNonRoot = true;
-                node.Parent.Children.Add(left);
-                node.Parent.Children.Add(right);
-                node.Parent.Children.Remove(node);
+                node.Parent.AddChildren(left);
+                node.Parent.AddChildren(right);
+                node.Parent.RemoveChildren(node);
                 left.Parent = right.Parent = node.Parent;
                 node.Parent.Add(node.Values[node.Values.Count / 2]);
 
                 node.CopyFrom(left);
             }
-
-
         }
 
         private void Split(Node node)

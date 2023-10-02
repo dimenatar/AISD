@@ -1,14 +1,16 @@
 ﻿namespace AISD.BTrees
 {
-    internal class Node
+    public class Node : IComparer<Node>
     {
         private int _size;
         private List<int> _values;
+        private NodeComparer _nodeComparer;
 
         public Node Parent { get; set; }
         public List<Node> Children { get; set; } = new List<Node>();
         public int Index { get; set; }
         public bool IsOverflowedNonRoot { get; set; }
+        public bool IsOverflowed { get; set; }
         public List<int> Values => new List<int>(_values);
 
         public event Action<Node> Overflowed;
@@ -17,6 +19,7 @@
         {
             _size = size;
             _values = values;
+            _nodeComparer = new NodeComparer();
         }
 
         public Node(int size)
@@ -41,7 +44,8 @@
             _values.Sort();
             if (_values.Count > _size - 1)
             {
-                Overflowed?.Invoke(this);
+                IsOverflowed = true;
+                //Overflowed?.Invoke(this);
             }
         }
 
@@ -60,5 +64,33 @@
             Overflowed = node.Overflowed;
             IsOverflowedNonRoot = node.IsOverflowedNonRoot;
         }
+
+        public void AddChildren(Node child)
+        {
+            Children ??= new List<Node>();
+            Children.Add(child);
+            Children.Sort(this);
+        }
+
+        public void RemoveChildren(Node child)
+        {
+            Children.Remove(child);
+            Children.Sort(this);
+        }
+
+
+        public int Compare(Node? x, Node? y)
+        {
+            return x.Values.First().CompareTo(y.Values.First());
+        }
+    }
+
+    public class NodeComparer : IComparer<Node>
+    {
+        int IComparer<Node>.Compare(Node x, Node y)
+        {
+            return x.Values.First().CompareTo(y.Values.First());
+        }
     }
 }
+

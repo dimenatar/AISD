@@ -350,10 +350,13 @@ namespace AISD
                         case 2:
                             {
                                 // ввод хардкорных значений
+                                bTree.Add(-50);
                                 bTree.Add(0);
-                                bTree.Add(10);
+                                bTree.Add(50);
+                                bTree.Add(-20);
                                 bTree.Add(20);
-                                bTree.Add(30);
+                                bTree.Add(100);
+                                bTree.Add(-30);
                                 bTree.PrintTree();
 
                                 break;
