@@ -361,6 +361,11 @@ namespace AISD
 
                                 break;
                             }
+                        case 3:
+                            {
+                                Console.WriteLine(bTree.Search(PerformInput("Введите элемент для поиска", out int element)) ? "Найден" : "Не найден");
+                                break;
+                            }
                         default:
                             {
                                 Console.WriteLine("Неправильный пункт меню");

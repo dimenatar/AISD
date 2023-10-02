@@ -35,12 +35,25 @@
 
         public bool Search(int item)
         {
-            return true;
+            return Search(item, Root);   
         }
 
         public void PrintTree()
         {
             PrintTree(Root);
+        }
+
+        private bool Search(int item, Node currentNode)
+        {
+            if (currentNode.Values.Contains(item)) return true;
+            else
+            {
+                foreach (var child in currentNode.Children)
+                {
+                    if (child.Values.Contains(item)) return true;
+                }
+                return false;
+            }
         }
 
         private void PrintTree(Node current)
