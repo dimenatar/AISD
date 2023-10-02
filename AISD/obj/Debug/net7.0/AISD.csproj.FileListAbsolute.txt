@@ -1,0 +1,15 @@
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\bin\Debug\net7.0\AISD.exe
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\bin\Debug\net7.0\AISD.deps.json
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\bin\Debug\net7.0\AISD.runtimeconfig.json
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\bin\Debug\net7.0\AISD.dll
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\bin\Debug\net7.0\AISD.pdb
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.csproj.AssemblyReference.cache
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.AssemblyInfoInputs.cache
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.AssemblyInfo.cs
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.csproj.CoreCompileInputs.cache
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.dll
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\refint\AISD.dll
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.pdb
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\AISD.genruntimeconfig.cache
+C:\Users\dimenatar\Desktop\Work\БГУИР\ЭУМКД_СиАОД\AISD\AISD\obj\Debug\net7.0\ref\AISD.dll
