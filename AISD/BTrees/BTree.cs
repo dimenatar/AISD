@@ -2,6 +2,8 @@
 {
     internal class BTree
     {
+        public int MinAmount => (_m / 2);
+
         private int _m;
         private Node _root;
 
@@ -43,6 +45,115 @@
             PrintTree(Root);
         }
 
+        private void Remove(int item, Node currentNode)
+        {
+            Node foundNode = GetNodeWithValue(Root, item);
+
+        }
+
+        private void RemoveFromLeaf(int item, Node currentNode)
+        {
+            if (currentNode.Values.Count > MinAmount)
+            {
+                currentNode.Remove(item);
+                return;
+            }
+
+            bool isRemoved = false;
+            var left = GetFromLeft(currentNode);
+            var right = GetFromRight(currentNode);
+            if (left != null)
+            {
+                if (left.Values.Count > MinAmount)
+                {
+                    var updatedParentValue = left.Values.Last();
+                    var updatedCurrentNodeValue = currentNode.Parent.Values.First();
+
+                    left.Remove(updatedParentValue);
+                    currentNode.Parent.Remove(updatedCurrentNodeValue);
+
+                    currentNode.Parent.Add(updatedParentValue);
+                    currentNode.Add(updatedCurrentNodeValue);
+                    isRemoved = true;
+                }
+            }
+            else if (right != null)
+            {
+                if (right.Values.Count > MinAmount)
+                {
+                    var updatedParentValue = right.Values.First();
+                    var updatedCurrentNodeValue = currentNode.Parent.Values.Last();
+
+                    right.Remove(updatedParentValue);
+                    currentNode.Parent.Remove(updatedCurrentNodeValue);
+
+                    currentNode.Parent.Add(updatedParentValue);
+                    currentNode.Add(updatedCurrentNodeValue);
+
+                    isRemoved = true;
+                }
+            }
+            if (!isRemoved)
+            {
+                Merge(item, currentNode, left, right);
+            }
+        }
+
+        private void Merge(int item, Node currentNode, Node? left, Node? right)
+        {
+            // mergde
+            Node merdgingNode = left != null ? left : right;
+            currentNode.Parent.RemoveChildren(merdgingNode);
+
+            int insertingParentElementIndex = 0;
+            if (left == null)
+            {
+                insertingParentElementIndex = 0;
+            }
+            else if (right == null)
+            {
+                insertingParentElementIndex = currentNode.Parent.Children.Count - 2;
+            }
+            else
+            {
+                insertingParentElementIndex = currentNode.Parent.Children.IndexOf(currentNode) - 1;
+            }
+            // удаляем из узла сам элемент
+            currentNode.Remove(item);
+            // добавляем из верхнего узла нужный элемент
+            currentNode.Add(currentNode.Parent.Values[insertingParentElementIndex]);
+            // удаляем его же из верхнего узла
+            currentNode.Parent.Remove(currentNode.Parent.Values[insertingParentElementIndex]);
+            //удаляем из верхнего узла ссылку на узел, из которого мы взяли элементы
+            currentNode.Parent.RemoveChildren(merdgingNode);
+            currentNode.AddChildren(merdgingNode.Children);
+            currentNode.Add(merdgingNode.Values);
+
+            if (currentNode.Parent == Root)
+            {
+                if (Root.Values.Count == 0)
+                {
+                    var currentChildren = Root.Children;
+                    foreach (var child in Root.Children)
+                    {
+                        // добавляем детей от детей рута, чтоб объединить
+                        Root.AddChildren(child.Children);
+                    }
+                    Root.RemoveChildren(currentChildren);
+                    // и пихаем в рут все элементы от детей
+                    foreach (var pastChild in currentChildren)
+                    {
+                        Root.Add(pastChild.Values);
+                    }
+                }
+            }
+        }
+
+        private void RemoveFromNonLeaf(int item, Node currentNode)
+        {
+
+        }
+
         private bool Search(int item, Node currentNode)
         {
             if (currentNode.Values.Contains(item)) return true;
@@ -50,7 +161,7 @@
             {
                 foreach (var child in currentNode.Children)
                 {
-                    if (child.Values.Contains(item)) return true;
+                    if (Search(item, child)) return true;
                 }
                 return false;
             }
@@ -167,10 +278,43 @@
             }
         }
 
-        private void Split(Node node)
+        private Node GetFromLeft(Node current)
         {
-            Node left, right = new Node(_m);
+            var index = current.Parent.Children.IndexOf(current);
+            if (index > 0)
+            {
+                return current.Parent.Children[index - 1];
+            }
+            return null;
+        }
 
+        private Node GetFromRight(Node current)
+        {
+            var index = current.Parent.Children.IndexOf(current);
+            if (index < current.Parent.Children.Count - 1)
+            {
+                return current.Parent.Children[index + 1];
+            }
+            return null;
+        }
+
+        private Node GetNodeWithValue(Node current, int value)
+        {
+            if (current.Values.Contains(value)) return current;
+            else
+            {
+                if (current.Children.Count > 0)
+                {
+                    Node found;
+                    foreach (var child in current.Children)
+                    {
+                        found = GetNodeWithValue(child, value);
+                        if (found != null) return found;
+                    }
+                    return null;
+                }
+                else return null;
+            }
         }
     }
 }

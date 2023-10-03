@@ -11,6 +11,8 @@
         public int Index { get; set; }
         public bool IsOverflowedNonRoot { get; set; }
         public bool IsOverflowed { get; set; }
+        public bool IsUnderflowed { get; set; }
+        public bool IsLeaf { get; set; }
         public List<int> Values => new List<int>(_values);
 
         public event Action<Node> Overflowed;
@@ -49,6 +51,27 @@
             }
         }
 
+        public void Add(IEnumerable<int> values)
+        {
+            _values.AddRange(values);
+            _values.Sort();
+            if (_values.Count > _size - 1)
+            {
+                IsOverflowed = true;
+                //Overflowed?.Invoke(this);
+            }
+        }
+
+        public void Remove(int value)
+        {
+            _values.Remove(value);
+            _values.Sort();
+            if (_values.Count < _size / 2)
+            {
+                IsUnderflowed = true;
+            }
+        }
+
         public void ReplaceValues(IEnumerable<int> values)
         {
             _values = new List<int>(values);
@@ -72,12 +95,27 @@
             Children.Sort(this);
         }
 
+        public void AddChildren(IEnumerable<Node> children)
+        {
+            Children ??= new List<Node>();
+            Children.AddRange(children);
+            Children.Sort(this);
+        }
+
         public void RemoveChildren(Node child)
         {
             Children.Remove(child);
             Children.Sort(this);
         }
 
+        public void RemoveChildren(IEnumerable<Node> children)
+        {
+            foreach (var child in children)
+            {
+                Children.Remove(child);
+            }
+            Children.Sort(this);
+        }
 
         public int Compare(Node? x, Node? y)
         {
