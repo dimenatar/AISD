@@ -34,7 +34,7 @@
 
         public override string ToString()
         {
-            return $"index: {Index}, values: {string.Join(' ', Values)}, Parent: {(Parent == null ? " - " : string.Join(' ', Parent.Values))}, ChildCount: {Children.Count}";
+            return $"values: {string.Join(' ', Values)}";
         }
 
         public bool IsEnoughSpace()
