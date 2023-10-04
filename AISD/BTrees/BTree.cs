@@ -33,6 +33,12 @@
         {
 
             Node foundNode = GetNodeWithValue(Root, item);
+            if (foundNode == null)
+            {
+                Console.WriteLine("значение не найдено");
+                return;
+            }
+
             if (foundNode.IsLeaf)
             {
                 RemoveFromLeaf(item, foundNode);
@@ -179,9 +185,16 @@
             if (currentNode.Values.Contains(item)) return true;
             else
             {
-                foreach (var child in currentNode.Children)
+                for (int i = 0; i < currentNode.Values.Count; i++)
                 {
-                    if (Search(item, child)) return true;
+                    if (item < currentNode.Values[i])
+                    {
+                        return Search(item, currentNode.Children[i]);
+                    }
+                    else if (i == currentNode.Values.Count - 1 && item > currentNode.Values[i])
+                    {
+                        return Search(item, currentNode.Children[i + 1]);
+                    }
                 }
                 return false;
             }
