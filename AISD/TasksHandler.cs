@@ -359,7 +359,7 @@ namespace AISD
                                 //bTree.Add(-30);
                                 //bTree.PrintTree();
 
-                                for (int i = 0; i < 25; i++)
+                                for (int i = 0; i < 29; i++)
                                 {
                                     bTree.Add(i + 1);
                                 }

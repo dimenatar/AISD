@@ -20,7 +20,6 @@
         {
             _m = m;
             Root = new Node(m);
-            Root.Overflowed += SplitNode;
         }
 
         public void Add(int item)
@@ -56,25 +55,6 @@
 
         private void RemoveFromLeaf(int item, Node currentNode)
         {
-            //int insertingChildElementIndex = 0;
-            //int indexOfCurrentItem = currentNode.Values.IndexOf(item);
-            //if (indexOfCurrentItem == 0)
-            //{
-            //    insertingChildElementIndex = 0;
-            //}
-            //else
-            //{
-            //    insertingChildElementIndex = indexOfCurrentItem - 1;
-            //}
-
-            //currentNode.Remove(item);
-            //currentNode.Add(currentNode.Children[insertingChildElementIndex].Values.Last());
-            //currentNode.Children[insertingChildElementIndex].Values.RemoveAt(currentNode.Children[insertingChildElementIndex].Values.Count - 1);
-
-            //if (currentNode.Children[insertingChildElementIndex].IsUnderflowed)
-            //{
-            //    ManageUnderflow(currentNode.Children[insertingChildElementIndex]);
-            //}
             currentNode.Remove(item);
             if (currentNode.IsUnderflowed)
             {
@@ -102,7 +82,7 @@
                     isRemoved = true;
                 }
             }
-            else if (right != null)
+            if (right != null && !isRemoved)
             {
                 if (right.Values.Count > MinAmount)
                 {
@@ -132,18 +112,6 @@
 
 
             int insertingParentElementIndex = 0;
-            //if (left == null)
-            //{
-            //    insertingParentElementIndex = 0;
-            //}
-            //else if (right == null)
-            //{
-            //    insertingParentElementIndex = currentNode.Parent.Children.Count - 2;
-            //}
-            //else
-            //{
-            // insertingParentElementIndex = currentNode.Parent.Children.IndexOf(currentNode);
-            //}
             int indexOfCurrentChild = currentNode.Parent.Children.IndexOf(currentNode);
             if (indexOfCurrentChild == 0)
             {
@@ -153,7 +121,6 @@
             {
                 insertingParentElementIndex = indexOfCurrentChild - 1;
             }
-            //currentNode.Parent.RemoveChildren(merdgingNode);
             // добавляем из верхнего узла нужный элемент
             currentNode.Add(currentNode.Parent.Values[insertingParentElementIndex]);
             // удаляем его же из верхнего узла
@@ -183,7 +150,6 @@
             }
             else if (currentNode.Parent.IsUnderflowed)
             {
-                Console.WriteLine(currentNode.Parent.Parent.Children.IndexOf(currentNode.Parent));
                 ManageUnderflow(currentNode.Parent);
             }
         }
@@ -194,21 +160,10 @@
 
 
             Node childFrom = FindLeaf(currentNode.Children[removingElementIndex]);
-            // что-то тут происходит
-            Console.WriteLine($"remove non {childFrom.Parent.Parent.Children.IndexOf(childFrom.Parent)}");
-            //Node childFrom = leafWithMaxElement.Item1;
-            //Node childFrom = currentNode.Children[removingElementIndex];
-
 
             int removingItemFromChild = childFrom.Values.Last();
-            //childFrom.Remove(removingItemFromChild);
             currentNode.Remove(item);
             currentNode.Add(removingItemFromChild);
-            //childFrom.Remove(removingItemFromChild);
-            //if (childFrom.IsUnderflowed)
-            //{
-            //    ManageUnderflow(childFrom);
-            //}
             RemoveFromLeaf(removingItemFromChild, childFrom);
         }
 
@@ -253,25 +208,14 @@
                 current.Add(item);
                 if (current.IsOverflowed)
                 {
-                    SplitNode(current);
+                    var updated = SplitNode(current);
                     current.IsOverflowed = false;
+                    return updated;
                 }
                 return current;
             }
 
-            //int lastBranchIndex = current.Children.Count - 1;
-            //int mostLeft = current.Children[0].Values[0];
-            //int mostRight = current.Children[lastBranchIndex].Values[current.Children[lastBranchIndex].Values.Count - 1];
-            //if (item < mostLeft)
-            //{
-            //    current.Children[0] = Add(item, current.Children[0]);
-            //}
-            //else if (item > mostRight)
-            //{
-            //    current.Children[current.Children.Count - 1] = Add(item, current.Children[current.Children.Count - 1]);
-            //}
-            //else
-            //{
+
             for (int i = 0; i < current.Values.Count; i++)
             {
                 if (item < current.Values[i])
@@ -285,16 +229,16 @@
                     break;
                 }
             }
-            //}
             if (current.IsOverflowed)
             {
-                SplitNode(current);
+                var updated = SplitNode(current);
                 current.IsOverflowed = false;
+                return updated;
             }
             return current;
         }
 
-        private void SplitNode(Node node)
+        private Node SplitNode(Node node)
         {
             Console.WriteLine("split");
 
@@ -318,8 +262,6 @@
             right.ReplaceValues(nodeValues.TakeLast(lengthEnd));
 
 
-            left.Overflowed += SplitNode;
-            right.Overflowed += SplitNode;
             if (node == _root)
             {
 
@@ -329,6 +271,9 @@
                 node.Children.Clear();
                 node.AddChildren(left);
                 node.AddChildren(right);
+                left.ReparentChildren();
+                right.ReparentChildren();
+                return node;
             }
             else
             {
@@ -342,10 +287,10 @@
                 node.CopyFrom(left);
                 node = left;
                 node.ReparentChildren();
+                left.ReparentChildren();
+                right.ReparentChildren();
+                return left;
             }
-            left.ReparentChildren();
-            right.ReparentChildren();
-            // not reparent node
         }
 
         private Node GetFromLeft(Node current)
