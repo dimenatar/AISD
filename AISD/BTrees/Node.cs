@@ -32,7 +32,7 @@
 
         public override string ToString()
         {
-            return $"index: {Index}, values: {string.Join(' ', Values)} \n ChildCount: {Children.Count}";
+            return $"index: {Index}, values: {string.Join(' ', Values)}, Parent: {(Parent == null ? " - " : string.Join(' ', Parent.Values))}, ChildCount: {Children.Count}";
         }
 
         public bool IsEnoughSpace()
@@ -120,6 +120,15 @@
         public int Compare(Node? x, Node? y)
         {
             return x.Values.First().CompareTo(y.Values.First());
+        }
+
+        public void ReparentChildren()
+        {
+            foreach (var child in Children)
+            {
+                child.Parent = this;
+                child.ReparentChildren();
+            }
         }
     }
 

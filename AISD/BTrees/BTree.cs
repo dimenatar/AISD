@@ -32,7 +32,15 @@
 
         public void Remove(int item)
         {
-
+            Node foundNode = GetNodeWithValue(Root, item);
+            if (foundNode.IsLeaf)
+            {
+                RemoveFromLeaf(item, foundNode);
+            }
+            else
+            {
+                RemoveFromNonLeaf(item, foundNode);
+            }
         }
 
         public bool Search(int item)
@@ -45,20 +53,19 @@
             PrintTree(Root);
         }
 
-        private void Remove(int item, Node currentNode)
-        {
-            Node foundNode = GetNodeWithValue(Root, item);
-
-        }
-
         private void RemoveFromLeaf(int item, Node currentNode)
         {
-            if (currentNode.Values.Count > MinAmount)
+            currentNode.Remove(item);
+            if (!currentNode.IsUnderflowed)
             {
-                currentNode.Remove(item);
                 return;
             }
 
+            ManageUnderflow(currentNode);
+        }
+
+        private void ManageUnderflow(Node currentNode)
+        {
             bool isRemoved = false;
             var left = GetFromLeft(currentNode);
             var right = GetFromRight(currentNode);
@@ -95,11 +102,11 @@
             }
             if (!isRemoved)
             {
-                Merge(item, currentNode, left, right);
+                Merge(currentNode, left, right);
             }
         }
 
-        private void Merge(int item, Node currentNode, Node? left, Node? right)
+        private void Merge(Node currentNode, Node? left, Node? right)
         {
             // mergde
             Node merdgingNode = left != null ? left : right;
@@ -118,8 +125,7 @@
             {
                 insertingParentElementIndex = currentNode.Parent.Children.IndexOf(currentNode) - 1;
             }
-            // удаляем из узла сам элемент
-            currentNode.Remove(item);
+
             // добавляем из верхнего узла нужный элемент
             currentNode.Add(currentNode.Parent.Values[insertingParentElementIndex]);
             // удаляем его же из верхнего узла
@@ -147,11 +153,24 @@
                     }
                 }
             }
+            else if (currentNode.Parent.IsUnderflowed)
+            {
+                ManageUnderflow(currentNode.Parent);
+            }
         }
 
         private void RemoveFromNonLeaf(int item, Node currentNode)
         {
-
+            int removingElementIndex = currentNode.Values.IndexOf(item);
+            Node childFrom = currentNode.Children[removingElementIndex];
+            int removingItemFromChild = childFrom.Values.Last();
+            //childFrom.Remove(removingItemFromChild);
+            currentNode.Remove(item);
+            currentNode.Add(removingItemFromChild);
+            if (childFrom.IsUnderflowed)
+            {
+                ManageUnderflow(childFrom);
+            }
         }
 
         private bool Search(int item, Node currentNode)
@@ -271,11 +290,14 @@
                 node.Parent.AddChildren(left);
                 node.Parent.AddChildren(right);
                 node.Parent.RemoveChildren(node);
+                ////////////
                 left.Parent = right.Parent = node.Parent;
                 node.Parent.Add(node.Values[node.Values.Count / 2]);
 
                 node.CopyFrom(left);
             }
+            left.ReparentChildren();
+            right.ReparentChildren();
         }
 
         private Node GetFromLeft(Node current)

@@ -10,6 +10,7 @@ while (true)
     Console.WriteLine("2. Lab13 (графы)");
     Console.WriteLine("3. KR1 (бинарные деревья)");
     Console.WriteLine("4. Lab14 (хеш-файлы)");
+    Console.WriteLine("5. Lab15 B деревья");
 
     if (byte.TryParse(Console.ReadLine(), out choice))
     {

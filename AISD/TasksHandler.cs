@@ -350,20 +350,30 @@ namespace AISD
                         case 2:
                             {
                                 // ввод хардкорных значений
-                                bTree.Add(-50);
-                                bTree.Add(0);
-                                bTree.Add(50);
-                                bTree.Add(-20);
-                                bTree.Add(20);
-                                bTree.Add(100);
-                                bTree.Add(-30);
-                                bTree.PrintTree();
+                                //bTree.Add(-50);
+                                //bTree.Add(0);
+                                //bTree.Add(50);
+                                //bTree.Add(-20);
+                                //bTree.Add(20);
+                                //bTree.Add(100);
+                                //bTree.Add(-30);
+                                //bTree.PrintTree();
+
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    bTree.Add(i + 1);
+                                }
 
                                 break;
                             }
                         case 3:
                             {
                                 Console.WriteLine(bTree.Search(PerformInput("Введите элемент для поиска", out int element)) ? "Найден" : "Не найден");
+                                break;
+                            }
+                        case 4:
+                            {
+                                bTree.Remove(PerformInput("Введите значение для удаления", out int value));
                                 break;
                             }
                         default:
