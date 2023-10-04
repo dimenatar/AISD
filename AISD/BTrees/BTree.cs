@@ -183,7 +183,7 @@
         private bool Search(int item, Node currentNode)
         {
             if (currentNode.Values.Contains(item)) return true;
-            else
+            else if (currentNode.Children.Count > 0)
             {
                 for (int i = 0; i < currentNode.Values.Count; i++)
                 {
@@ -198,6 +198,7 @@
                 }
                 return false;
             }
+            return false;
         }
 
         private void PrintTree(Node current)
