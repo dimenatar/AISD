@@ -3,6 +3,7 @@
     public class Node : IComparer<Node>
     {
         private int _size;
+        private readonly int MIN;
         private List<int> _values;
         private NodeComparer _nodeComparer;
 
@@ -27,6 +28,7 @@
         public Node(int size)
         {
             _size = size;
+            MIN = (int)Math.Ceiling((double)_size / 2 - 1);
             _values = new List<int>();
         }
 
@@ -66,7 +68,7 @@
         {
             _values.Remove(value);
             _values.Sort();
-            if (_values.Count < _size / 2)
+            if (_values.Count < MIN)
             {
                 IsUnderflowed = true;
             }
@@ -124,11 +126,16 @@
 
         public void ReparentChildren()
         {
-            foreach (var child in Children)
+            if (Children.Count > 0)
             {
-                child.Parent = this;
-                child.ReparentChildren();
+                IsLeaf = false;
+                foreach (var child in Children)
+                {
+                    child.ReparentChildren();
+                    child.Parent = this;
+                }
             }
+            else IsLeaf = true;
         }
     }
 

@@ -359,7 +359,7 @@ namespace AISD
                                 //bTree.Add(-30);
                                 //bTree.PrintTree();
 
-                                for (int i = 0; i < 30; i++)
+                                for (int i = 0; i < 25; i++)
                                 {
                                     bTree.Add(i + 1);
                                 }
@@ -374,6 +374,11 @@ namespace AISD
                         case 4:
                             {
                                 bTree.Remove(PerformInput("Введите значение для удаления", out int value));
+                                break;
+                            }
+                        case 5:
+                            {
+                                bTree.PrintTree();
                                 break;
                             }
                         default:

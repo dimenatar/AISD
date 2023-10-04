@@ -2,7 +2,7 @@
 {
     internal class BTree
     {
-        public int MinAmount => (_m / 2);
+        public int MinAmount => (int)Math.Ceiling((double)_m / 2 - 1);
 
         private int _m;
         private Node _root;
@@ -32,6 +32,7 @@
 
         public void Remove(int item)
         {
+
             Node foundNode = GetNodeWithValue(Root, item);
             if (foundNode.IsLeaf)
             {
@@ -55,13 +56,30 @@
 
         private void RemoveFromLeaf(int item, Node currentNode)
         {
-            currentNode.Remove(item);
-            if (!currentNode.IsUnderflowed)
-            {
-                return;
-            }
+            //int insertingChildElementIndex = 0;
+            //int indexOfCurrentItem = currentNode.Values.IndexOf(item);
+            //if (indexOfCurrentItem == 0)
+            //{
+            //    insertingChildElementIndex = 0;
+            //}
+            //else
+            //{
+            //    insertingChildElementIndex = indexOfCurrentItem - 1;
+            //}
 
-            ManageUnderflow(currentNode);
+            //currentNode.Remove(item);
+            //currentNode.Add(currentNode.Children[insertingChildElementIndex].Values.Last());
+            //currentNode.Children[insertingChildElementIndex].Values.RemoveAt(currentNode.Children[insertingChildElementIndex].Values.Count - 1);
+
+            //if (currentNode.Children[insertingChildElementIndex].IsUnderflowed)
+            //{
+            //    ManageUnderflow(currentNode.Children[insertingChildElementIndex]);
+            //}
+            currentNode.Remove(item);
+            if (currentNode.IsUnderflowed)
+            {
+                ManageUnderflow(currentNode);
+            }
         }
 
         private void ManageUnderflow(Node currentNode)
@@ -104,28 +122,38 @@
             {
                 Merge(currentNode, left, right);
             }
+            currentNode.IsUnderflowed = false;
         }
 
         private void Merge(Node currentNode, Node? left, Node? right)
         {
             // mergde
             Node merdgingNode = left != null ? left : right;
-            currentNode.Parent.RemoveChildren(merdgingNode);
+
 
             int insertingParentElementIndex = 0;
-            if (left == null)
+            //if (left == null)
+            //{
+            //    insertingParentElementIndex = 0;
+            //}
+            //else if (right == null)
+            //{
+            //    insertingParentElementIndex = currentNode.Parent.Children.Count - 2;
+            //}
+            //else
+            //{
+            // insertingParentElementIndex = currentNode.Parent.Children.IndexOf(currentNode);
+            //}
+            int indexOfCurrentChild = currentNode.Parent.Children.IndexOf(currentNode);
+            if (indexOfCurrentChild == 0)
             {
                 insertingParentElementIndex = 0;
             }
-            else if (right == null)
-            {
-                insertingParentElementIndex = currentNode.Parent.Children.Count - 2;
-            }
             else
             {
-                insertingParentElementIndex = currentNode.Parent.Children.IndexOf(currentNode) - 1;
+                insertingParentElementIndex = indexOfCurrentChild - 1;
             }
-
+            //currentNode.Parent.RemoveChildren(merdgingNode);
             // добавляем из верхнего узла нужный элемент
             currentNode.Add(currentNode.Parent.Values[insertingParentElementIndex]);
             // удаляем его же из верхнего узла
@@ -155,6 +183,7 @@
             }
             else if (currentNode.Parent.IsUnderflowed)
             {
+                Console.WriteLine(currentNode.Parent.Parent.Children.IndexOf(currentNode.Parent));
                 ManageUnderflow(currentNode.Parent);
             }
         }
@@ -162,15 +191,32 @@
         private void RemoveFromNonLeaf(int item, Node currentNode)
         {
             int removingElementIndex = currentNode.Values.IndexOf(item);
-            Node childFrom = currentNode.Children[removingElementIndex];
+
+
+            Node childFrom = FindLeaf(currentNode.Children[removingElementIndex]);
+            // что-то тут происходит
+            Console.WriteLine($"remove non {childFrom.Parent.Parent.Children.IndexOf(childFrom.Parent)}");
+            //Node childFrom = leafWithMaxElement.Item1;
+            //Node childFrom = currentNode.Children[removingElementIndex];
+
+
             int removingItemFromChild = childFrom.Values.Last();
             //childFrom.Remove(removingItemFromChild);
             currentNode.Remove(item);
             currentNode.Add(removingItemFromChild);
-            if (childFrom.IsUnderflowed)
-            {
-                ManageUnderflow(childFrom);
-            }
+            //childFrom.Remove(removingItemFromChild);
+            //if (childFrom.IsUnderflowed)
+            //{
+            //    ManageUnderflow(childFrom);
+            //}
+            RemoveFromLeaf(removingItemFromChild, childFrom);
+        }
+
+        private Node FindLeaf(Node currentNode)
+        {
+            if (currentNode.IsLeaf) return currentNode;
+
+            return FindLeaf(currentNode.Children[currentNode.Children.Count - 1]);
         }
 
         private bool Search(int item, Node currentNode)
@@ -287,17 +333,19 @@
             else
             {
                 node.IsOverflowedNonRoot = true;
-                node.Parent.AddChildren(left);
+                //node.Parent.AddChildren(left);
                 node.Parent.AddChildren(right);
-                node.Parent.RemoveChildren(node);
-                ////////////
+                //node.Parent.RemoveChildren(node);
                 left.Parent = right.Parent = node.Parent;
                 node.Parent.Add(node.Values[node.Values.Count / 2]);
 
                 node.CopyFrom(left);
+                node = left;
+                node.ReparentChildren();
             }
             left.ReparentChildren();
             right.ReparentChildren();
+            // not reparent node
         }
 
         private Node GetFromLeft(Node current)
